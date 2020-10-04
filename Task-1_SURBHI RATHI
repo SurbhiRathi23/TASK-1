@@ -1,0 +1,95 @@
+const SHA256 = require('crypto-js/sha256');
+
+class Block{
+    constructor(height, body, time, previousblockhash = ''){
+
+        this.hash = this.calculatehash();
+        this.height = height;
+        this.body = body;
+        this.time = time;
+        this.previousblockhash= previousblockhash;
+     
+    }
+
+    calculatehash(){
+        // we will calculate the hash value of our block using a javascript library(sha-256)
+        // so import crypto-js
+        // js me return type not required to write
+        // this js is not type=-scripted(data type not required)
+
+        return SHA256(this.height + this.time + this.previousblockhash + JSON.stringify(this.body)).toString();
+    }
+
+  
+}
+
+class blockchain{
+
+    constructor(){
+        this.chain = [this.creategenisisblock()];
+    }
+
+    creategenisisblock(){
+
+        return new Block("1325430", "[ This is genisis block]" , "1529001800", "0");
+    }
+
+
+    getlastblock(){
+        return this.chain[this.chain.length - 1];
+
+    }
+
+    addBlock(newBlock){
+        // we are creating a new block named newBlock and settinng its values
+        newBlock.previousblockhash = this.getlastblock().hash;
+        newBlock.hash = newBlock.calculatehash();
+        this.chain.push(newBlock);
+
+    }
+    findheight(){
+        var x;
+        x = this.chain.length;
+        return x;
+    }
+
+    
+
+    chainvalid(){
+        for(var i=1; i< this.chain.length;i++){
+
+            const curblock = this.chain[i];
+            const preblock = this.chain[i-1];
+
+            if(curblock.hash != curblock.calculatehash()){
+                return "INVALID";
+            }
+
+            if(curblock.previousblockhash != preblock.hash){
+               
+                return "INVALID";
+            }
+
+        }
+
+        return "VALID";
+    }
+
+};
+
+// below - i am defining the variable object for this block chain created
+let blockcoin_ = new blockchain();
+blockcoin_.addBlock(new Block("1325431", "[ This is first block - transfer: 200]" , "1620002800" ));
+blockcoin_.addBlock(new Block("1325432", "[ This is second block - tranfer: 100]" , "1870061800" ));
+
+//console.log(" Block chain is = "+ blockcoin.chainvalid());
+
+console.log(JSON.stringify(blockcoin_, null ,4)); // 4 spacing formatting
+
+
+// blockcoin.chain[1].body = "[transfer : 1200]"; it will alter the chain and chain will become invalid..
+
+console.log("Block chain is = "+ blockcoin_.chainvalid());
+
+console.log("The height of Blockchain is = " + blockcoin_.findheight());
+
